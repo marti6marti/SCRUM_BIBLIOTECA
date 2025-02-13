@@ -13,10 +13,6 @@ public class Manager {
         User user = new User("Marti");
         library.addUser(user);
 
-        System.out.println("Enter your name:");
-        String userName = scanner.nextLine();
-        System.out.println("Enter book title to borrow:");
-        String bookTitle = scanner.nextLine();
-        library.borrowBook(userName, bookTitle);
+        library.borrowBook(user.getName(), book.getTitle());
     }
 }
