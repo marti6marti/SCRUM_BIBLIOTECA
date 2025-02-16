@@ -18,13 +18,17 @@ public class Library {
         users.put(user.getName(), user);
     }
 
-    public void borrowBook(String userName, String bookTitle) {
+    public HashMap<String, User> getUsers() {
+        return users;
+    }
+
+    public void borrowBook(String userName, int id) {
         User user = users.get(userName);
         for (Book book : books) {
-            if (book.getTitle().equalsIgnoreCase(bookTitle) && book.isAvailable()) {
+            if (book.getId()==id && book.isAvailable()) {
                 Loan loan = new Loan(user, book);
                 user.addLoan(loan);
-                System.out.println(userName + " borrowed " + bookTitle);
+                System.out.println(userName + " borrowed " + book.getTitle());
                 return;
             }
         }

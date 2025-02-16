@@ -1,12 +1,18 @@
 import java.util.ArrayList;
 
 public class Author {
+    private int id;
     private String name;
     private ArrayList<Book> books;
 
-    public Author(String name) {
+    public Author(int id, String name) {
+        this.id = id;
         this.name = name;
         this.books = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {

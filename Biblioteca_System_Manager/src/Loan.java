@@ -14,6 +14,7 @@ public class Loan {
         book.setAvailable(false);
     }
 
+
     public void returnBook() {
         this.returnDate = new Date();
         book.setAvailable(true);
