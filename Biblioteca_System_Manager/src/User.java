@@ -15,6 +15,10 @@ public class User {
         this.loanHistory = new ArrayList<>();
     }
 
+    public void removeFromLoanHistory(Loan loan) {
+        loanHistory.remove(loan);
+    }
+
     public int getId() {
         return id;
     }

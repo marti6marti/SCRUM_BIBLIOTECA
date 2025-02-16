@@ -26,4 +26,13 @@ public class Author {
     public ArrayList<Book> getBooks() {
         return books;
     }
+
+    @Override
+    public String toString() {
+        return "Author{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", numberOfBooks=" + books.size() +
+                '}';
+    }
 }

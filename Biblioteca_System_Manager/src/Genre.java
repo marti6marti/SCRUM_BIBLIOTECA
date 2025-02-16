@@ -8,4 +8,11 @@ public class Genre {
     public String getName() {
         return nameGenre;
     }
+
+    @Override
+    public String toString() {
+        return "Genre{" +
+                "nameGenre='" + nameGenre + '\'' +
+                '}';
+    }
 }

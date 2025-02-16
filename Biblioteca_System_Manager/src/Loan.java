@@ -14,9 +14,26 @@ public class Loan {
         book.setAvailable(false);
     }
 
-
     public void returnBook() {
         this.returnDate = new Date();
         book.setAvailable(true);
+    }
+    public Book getBook() {
+        return book;
+    }
+
+    public Date getReturnDate() {
+        return returnDate;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Loan{" +
+                "user=" + user +
+                ", book=" + book +
+                ", loanDate=" + loanDate +
+                ", returnDate=" + returnDate +
+                '}';
     }
 }
