@@ -1,6 +1,8 @@
+import domain.model.*;
+
 import java.util.Scanner;
 
-public class Manager {
+public class Main {
     public static void main(String[] args) {
         Library library = new Library();
         Scanner scanner = new Scanner(System.in);
@@ -27,7 +29,7 @@ public class Manager {
                 adminMenu(library);
 
             } else {
-                System.out.println("Welcome User!");
+                System.out.println("Welcome domain.model.User!");
                 userMenu(loggedInUser , library);
 
             }
@@ -72,7 +74,7 @@ public class Manager {
                     System.out.println("Users: " + library.getUsers().keySet());
                     break;
                 case 2:
-                    System.out.println("All Books in the Library:");
+                    System.out.println("All Books in the domain.model.Library:");
                     if (library.getBooks().isEmpty()) {
                         System.out.println("No books available in the library.");
                     } else {
@@ -91,7 +93,7 @@ public class Manager {
                     int authorId = scanner.nextInt();
                     Author author = library.getAuthorById(authorId);
                     if (author == null) {
-                        System.out.println("Author not found.");
+                        System.out.println("domain.model.Author not found.");
                         break;
                     }
                     System.out.println("Enter genre name:");
@@ -99,15 +101,15 @@ public class Manager {
                     Genre genre = new Genre(genreName);
                     Book newBook = new Book(bookId, bookTitle, author, genre);
                     library.addBook(newBook);
-                    System.out.println("Book added successfully.");
+                    System.out.println("domain.model.Book added successfully.");
                     break;
                 case 4:
                     System.out.println("Enter book ID to remove:");
                     int removeBookId = scanner.nextInt();
                     if (library.removeBookById(removeBookId)) {
-                        System.out.println("Book removed successfully.");
+                        System.out.println("domain.model.Book removed successfully.");
                     } else {
-                        System.out.println("Book not found.");
+                        System.out.println("domain.model.Book not found.");
                     }
                     break;
                 case 5:
@@ -115,9 +117,9 @@ public class Manager {
                     String userName = scanner.nextLine();
                     User user = library.getUsers().get(userName);
                     if (user != null) {
-                        System.out.println("Loan History: " + user.getLoanHistory());
+                        System.out.println("domain.model.Loan History: " + user.getLoanHistory());
                     } else {
-                        System.out.println("User  not found.");
+                        System.out.println("domain.model.User  not found.");
                     }
                     break;
                 case 6:
@@ -134,7 +136,7 @@ public class Manager {
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("User  Menu:");
+            System.out.println("domain.model.User  Menu:");
             System.out.println("1. View available books");
             System.out.println("2. Borrow a book");
             System.out.println("3. Return a book");
@@ -162,13 +164,13 @@ public class Manager {
                     System.out.println("Enter book ID to return:");
                     int bookIdToReturn = scanner.nextInt();
                     if (library.returnBook(bookIdToReturn, loggedInUser )) {
-                        System.out.println("Book returned successfully.");
+                        System.out.println("domain.model.Book returned successfully.");
                     } else {
-                        System.out.println("Book not found or was not borrowed.");
+                        System.out.println("domain.model.Book not found or was not borrowed.");
                     }
                     break;
                 case 4:
-                    System.out.println("Loan History: " + loggedInUser .getLoanHistory());
+                    System.out.println("domain.model.Loan History: " + loggedInUser .getLoanHistory());
                     break;
                 case 5:
                     exit = true;

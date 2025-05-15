@@ -1,3 +1,5 @@
+package domain.model;
+
 import java.util.ArrayList;
 
 public class Author {
@@ -29,7 +31,7 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author{" +
+        return "domain.model.Author{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", numberOfBooks=" + books.size() +

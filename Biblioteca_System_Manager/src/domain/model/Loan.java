@@ -1,3 +1,5 @@
+package domain.model;
+
 import java.util.Date;
 
 public class Loan {
@@ -29,7 +31,7 @@ public class Loan {
 
     @Override
     public String toString() {
-        return "Loan{" +
+        return "domain.model.Loan{" +
                 "user=" + user +
                 ", book=" + book +
                 ", loanDate=" + loanDate +

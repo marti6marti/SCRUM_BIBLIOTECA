@@ -1,3 +1,5 @@
+package domain.model;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,11 +48,11 @@ public class Library {
             if (book.getId() == bookId && book.isAvailable()) {
                 Loan loan = new Loan(user, book);
                 user.addLoan(loan);
-                System.out.println("Book borrowed successfully.");
+                System.out.println("domain.model.Book borrowed successfully.");
                 return;
             }
         }
-        System.out.println("Book not available or does not exist.");
+        System.out.println("domain.model.Book not available or does not exist.");
     }
 
     public void allBooks() {

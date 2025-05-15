@@ -1,3 +1,5 @@
+package domain.model;
+
 public class Genre {
     private String nameGenre;
 
@@ -11,7 +13,7 @@ public class Genre {
 
     @Override
     public String toString() {
-        return "Genre{" +
+        return "domain.model.Genre{" +
                 "nameGenre='" + nameGenre + '\'' +
                 '}';
     }
