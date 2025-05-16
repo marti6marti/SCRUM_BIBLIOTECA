@@ -2,7 +2,7 @@ import domain.model.*;
 import java.util.Scanner;
 import ui.*;
 
-public class Main {
+public class App {
     public static void main(String[] args) {
         Library library = new Library();
         Scanner scanner = new Scanner(System.in);
