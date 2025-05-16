@@ -1,33 +1,36 @@
 package domain.implementDAO;
 
-import domain.intefaceGenericDAO.GenericDAO;
-
-import java.sql.SQLException;
+import domain.model.User;
+import infrastructure.Conexion;
+import java.sql.*;
 import java.util.List;
 
-public class UserCRUD implements GenericDAO {
-    @Override
-    public int create(Object entity) throws SQLException {
-        return 0;
+public class UserCRUD {
+    private final Conexion conexion;
+
+    public UserCRUD() {
+        this.conexion = new Conexion();
     }
 
-    @Override
-    public void delete(int id) throws SQLException {
+    public int create(User user) throws SQLException {
+        String query = "INSERT INTO User(name, passwordHash, isAdmin) VALUES (?, ?, ?)";
+        try (Connection conn = conexion.conectarMySQL();
+             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getPasswordHash());
+            ps.setBoolean(3, user.isAdmin());
+
+            int affectedRows = ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    user.setId(generatedKeys.getInt(1));
+                }
+            }
+
+            return affectedRows;
+        }
     }
 
-    @Override
-    public Object read(int id) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public void update(Object entity) throws SQLException {
-
-    }
-
-    @Override
-    public List getAll() throws SQLException {
-        return List.of();
-    }
 }

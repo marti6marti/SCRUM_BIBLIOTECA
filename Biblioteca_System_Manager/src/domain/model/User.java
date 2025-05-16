@@ -16,6 +16,9 @@ public class User {
         this.isAdmin = isAdmin;
         this.loanHistory = new ArrayList<>();
     }
+    public User(){
+
+    }
 
     public void removeFromLoanHistory(Loan loan) {
         loanHistory.remove(loan);
@@ -43,6 +46,26 @@ public class User {
 
     public void addLoan(Loan loan) {
         loanHistory.add(loan);
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public void setLoanHistory(ArrayList<Loan> loanHistory) {
+        this.loanHistory = loanHistory;
     }
 
     private String MD5(String md5) {
