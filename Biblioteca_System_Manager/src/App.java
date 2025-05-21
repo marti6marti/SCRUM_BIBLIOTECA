@@ -8,7 +8,7 @@ public class App {
         Scanner scanner = new Scanner(System.in);
 
         Author author = new Author(6, "Autor1");
-        Genre genre = new Genre("Fantasy");
+        Genre genre = new Genre("Fantasy",1);
         Book book = new Book(1, "Harry Potter", author, genre);
         library.addBook(book);
 

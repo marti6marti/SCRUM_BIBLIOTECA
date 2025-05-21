@@ -16,6 +16,33 @@ public class Book {
         author.addBook(this);
     }
 
+    public Book(){
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
+
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
+
     public int getId() {
         return id;
     }
@@ -38,7 +65,7 @@ public class Book {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", author=" + author.getName() +
-                ", genre=" + genre.getName() +
+                ", genre=" + genre.getNameGenre() +
                 ", isAvailable=" + isAvailable +
                 '}';
     }
