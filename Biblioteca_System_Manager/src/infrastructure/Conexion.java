@@ -24,7 +24,7 @@ public class Conexion {
         }
     }
 
-    public Connection conectarMySQL() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
 }

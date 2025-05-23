@@ -1,13 +1,14 @@
 package domain.model;
 
 public class Genre {
+    private int id_Genere;
     private String nameGenre;
-    private int genereid;
+
 
 
     public Genre(String nameGenre, int genereid) {
         this.nameGenre = nameGenre;
-        this.genereid = genereid;
+        this.id_Genere = genereid;
     }
 
     public String getNameGenre() {
@@ -18,19 +19,19 @@ public class Genre {
         this.nameGenre = nameGenre;
     }
 
-    public int getGenereid() {
-        return genereid;
+    public int getId_Genere() {
+        return id_Genere;
     }
 
-    public void setGenereid(int genereid) {
-        this.genereid = genereid;
+    public void setId_Genere(int id_Genere) {
+        this.id_Genere = id_Genere;
     }
 
     @Override
     public String toString() {
         return "Genre{" +
                 "nameGenre='" + nameGenre + '\'' +
-                ", genereid=" + genereid +
+                ", id_Genere=" + id_Genere +
                 '}';
     }
 }

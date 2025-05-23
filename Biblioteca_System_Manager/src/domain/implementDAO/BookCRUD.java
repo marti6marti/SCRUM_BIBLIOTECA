@@ -5,12 +5,11 @@ import domain.model.Author;
 import domain.model.Book;
 import domain.model.Genre;
 import infrastructure.Conexion;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookCRUD implements GenericDAO {
+public class BookCRUD implements GenericDAO<Book> {
     private final Conexion conexion;
 
     public BookCRUD() {
@@ -18,70 +17,84 @@ public class BookCRUD implements GenericDAO {
     }
 
     @Override
-    public int create(Object entity) throws SQLException {
-        if (!(entity instanceof Book)) {
-            throw new IllegalArgumentException("Expected a Book object");
-        }
+    public int create(Book book) throws SQLException {
+        String sql = "INSERT INTO Book (id_Book, title, author_id, isAvailable) VALUES (?, ?, ?, ?)";
+        try (Connection conn = conexion.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, book.getId_Book());
+            stmt.setString(2, book.getTitle());
+            stmt.setInt(3, book.getAuthor().getId_Author());
+            stmt.setBoolean(4, book.isAvailable());
+            stmt.executeUpdate();
 
-        Book book = (Book) entity;
-
-        String query = "INSERT INTO Book(title, authorId, genre, isAvailable) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = conexion.conectarMySQL();
-             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, book.getTitle());
-            ps.setInt(2, book.getAuthor().getId());
-            ps.setInt(3, book.getGenre().getGenereid());
-            ps.setBoolean(4, book.isAvailable());
-
-            int affectedRows = ps.executeUpdate();
-
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    book.setId(generatedKeys.getInt(1));
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int bookId = rs.getInt(1);
+                    // Insert genres if any
+                    if (book.getBookGenres() != null && !book.getBookGenres().isEmpty()) {
+                        insertGenresForBook(bookId, book.getBookGenres(), conn);
+                    }
+                    return bookId;
                 }
             }
-
-            return affectedRows;
         }
+        return 0;
     }
 
+    private void insertGenresForBook(int bookId, List<Genre> genres, Connection conn) throws SQLException {
+        String sql = "INSERT INTO Book_Genre (book_id, genre_id) VALUES (?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (Genre genre : genres) {
+                stmt.setInt(1, bookId);
+                stmt.setInt(2, genre.getId_Genere());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        }
+    }
 
     @Override
     public void delete(int id) throws SQLException {
-        String query = "DELETE FROM Book WHERE id = ?";
-        try (Connection conn = conexion.conectarMySQL();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+        // First delete from Book_Genre
+        String deleteGenresSql = "DELETE FROM Book_Genre WHERE book_id = ?";
+        try (Connection conn = conexion.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(deleteGenresSql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
 
-            ps.setInt(1, id);
-            ps.executeUpdate();
+        // Then delete the book
+        String sql = "DELETE FROM Book WHERE id_Book = ?";
+        try (Connection conn = conexion.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
         }
     }
 
+    @Override
     public Book read(int id) throws SQLException {
-        String query = "SELECT b.id, b.title, b.isAvailable, "
-                + "a.id as author_id, a.name as author_name, "
-                + "g.genereid as genre_id, g.nameGenre as genre_name "
-                + "FROM Book b "
-                + "JOIN Author a ON b.author_id = a.id "
-                + "JOIN Genre g ON b.genre_id = g.genereid "
-                + "WHERE b.id = ?";
-
-        try (Connection conn = conexion.conectarMySQL();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-
-            ps.setInt(1, id);
-
-            try (ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT b.*, a.id_Author, a.name as authorName FROM Book b " +
+                "JOIN Author a ON b.author_id = a.id_Author " +
+                "WHERE b.id_Book = ?";
+        try (Connection conn = conexion.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Book book = new Book(
-                            rs.getInt("id"),
-                            rs.getString("title"),
-                            new Author(rs.getInt("author_id"), rs.getString("author_name")),
-                            new Genre(rs.getString("genre_name"), rs.getInt("genre_id"))
+                    Author author = new Author(
+                            rs.getInt("author_id"),
+                            rs.getString("authorName")
                     );
-                    book.setAvailable(rs.getBoolean("isAvailable"));
+                    Book book = new Book(
+                            rs.getInt("id_Book"),
+                            rs.getString("title"),
+                            author,
+                            rs.getBoolean("isAvailable"),
+                            new ArrayList<>()
+                    );
+                    // Load genres
+                    book.setBookGenres(getGenresForBook(id, conn));
                     return book;
                 }
             }
@@ -89,74 +102,76 @@ public class BookCRUD implements GenericDAO {
         return null;
     }
 
-    @Override
-    public void update(Object entity) throws SQLException {
-        if (!(entity instanceof Book)) {
-            throw new IllegalArgumentException("El objeto no es una instancia de Book");
-        }
-
-        Book book = (Book) entity;
-        String query = "UPDATE Book SET title = ?, author_id = ?, genre_id = ?, isAvailable = ? WHERE id = ?";
-
-        try (Connection conn = conexion.conectarMySQL();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-
-            ps.setString(1, book.getTitle());
-            ps.setInt(2, book.getAuthor().getId());
-            ps.setInt(3, book.getGenre().getGenereid());
-            ps.setBoolean(4, book.isAvailable());
-            ps.setInt(5, book.getId());
-
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw e;
-        }
-    }
-
-    @Override
-    public List<Object> getAll() throws SQLException {
-        String query = "SELECT b.id, b.title, b.isAvailable, "
-                + "a.id as author_id, a.name as author_name, "
-                + "g.genereid as genre_id, g.nameGenre as genre_name "
-                + "FROM Book b "
-                + "JOIN Author a ON b.author_id = a.id "
-                + "JOIN Genre g ON b.genre_id = g.genereid";
-
-        List<Object> books = new ArrayList<>();
-
-        try (Connection conn = conexion.conectarMySQL();
-             PreparedStatement ps = conn.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Book book = new Book(
-                        rs.getInt("id"),
-                        rs.getString("title"),
-                        new Author(rs.getInt("author_id"), rs.getString("author_name")),
-                        new Genre(rs.getString("genre_name"), rs.getInt("genre_id"))
-                );
-                book.setAvailable(rs.getBoolean("isAvailable"));
-                books.add(book);
-            }
-        }
-
-        return books;
-    }
-
-    // Això és una funció extra per comprovar la disponibilitat
-    public boolean isBookAvailable(int id) throws SQLException {
-        String query = "SELECT isAvailable FROM Book WHERE id = ?";
-        try (Connection conn = conexion.conectarMySQL();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getBoolean("isAvailable");
+    private ArrayList<Genre> getGenresForBook(int bookId, Connection conn) throws SQLException {
+        ArrayList<Genre> genres = new ArrayList<>();
+        String sql = "SELECT g.id_Genere, g.nameGenre FROM Genre g " +
+                "JOIN Book_Genre bg ON g.id_Genere = bg.genre_id " +
+                "WHERE bg.book_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, bookId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    genres.add(new Genre(
+                            rs.getString("nameGenre"),
+                            rs.getInt("id_Genere")
+                    ));
                 }
             }
         }
-        return false;
+        return genres;
+    }
+
+    @Override
+    public void update(Book book) throws SQLException {
+        String sql = "UPDATE Book SET title = ?, author_id = ?, isAvailable = ? WHERE id_Book = ?";
+        try (Connection conn = conexion.getConnection()) {
+            // Update book details
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, book.getTitle());
+                stmt.setInt(2, book.getAuthor().getId_Author());
+                stmt.setBoolean(3, book.isAvailable());
+                stmt.setInt(4, book.getId_Book());
+                stmt.executeUpdate();
+            }
+
+            // Update genres - first delete existing, then insert new
+            String deleteGenresSql = "DELETE FROM Book_Genre WHERE book_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(deleteGenresSql)) {
+                stmt.setInt(1, book.getId_Book());
+                stmt.executeUpdate();
+            }
+
+            if (book.getBookGenres() != null && !book.getBookGenres().isEmpty()) {
+                insertGenresForBook(book.getId_Book(), book.getBookGenres(), conn);
+            }
+        }
+    }
+
+    @Override
+    public List<Book> getAll() throws SQLException {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT b.*, a.id_Author, a.name as authorName FROM Book b " +
+                "JOIN Author a ON b.author_id = a.id_Author";
+        try (Connection conn = conexion.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Author author = new Author(
+                        rs.getInt("author_id"),
+                        rs.getString("authorName")
+                );
+                Book book = new Book(
+                        rs.getInt("id_Book"),
+                        rs.getString("title"),
+                        author,
+                        rs.getBoolean("isAvailable"),
+                        new ArrayList<>()
+                );
+                // Load genres for each book
+                book.setBookGenres(getGenresForBook(book.getId_Book(), conn));
+                books.add(book);
+            }
+        }
+        return books;
     }
 }

@@ -1,26 +1,34 @@
 package domain.model;
 
+import java.util.ArrayList;
+
 public class Book {
-    private int id;
+    private int id_Book;
     private String title;
     private Author author;
-    private Genre genre;
     private boolean isAvailable;
 
-    public Book(int id, String title, Author author, Genre genre) {
-        this.id = id;
+    private ArrayList<Genre> bookGenres;
+
+    public Book(int id_Book, String title, Author author, boolean isAvailable, ArrayList<Genre> genresGenres) {
+        this.id_Book = id_Book;
         this.title = title;
         this.author = author;
-        this.genre = genre;
-        this.isAvailable = true;
-        author.addBook(this);
+        this.isAvailable = isAvailable;
+        this.bookGenres = new ArrayList<>();
+    }
+    public Book(){}
+
+    public int getId_Book() {
+        return id_Book;
     }
 
-    public Book(){
+    public void setId_Book(int id_Book) {
+        this.id_Book = id_Book;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getTitle() {
+        return title;
     }
 
     public void setTitle(String title) {
@@ -35,22 +43,6 @@ public class Book {
         this.author = author;
     }
 
-    public Genre getGenre() {
-        return genre;
-    }
-
-    public void setGenre(Genre genre) {
-        this.genre = genre;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
     public boolean isAvailable() {
         return isAvailable;
     }
@@ -59,14 +51,22 @@ public class Book {
         isAvailable = available;
     }
 
+    public ArrayList<Genre> getBookGenres() {
+        return bookGenres;
+    }
+
+    public void setBookGenres(ArrayList<Genre> bookGenres) {
+        this.bookGenres = bookGenres;
+    }
+
     @Override
     public String toString() {
-        return "domain.model.Book{" +
-                "id=" + id +
+        return "Book{" +
+                "id_Book=" + id_Book +
                 ", title='" + title + '\'' +
-                ", author=" + author.getName() +
-                ", genre=" + genre.getNameGenre() +
+                ", author=" + author +
                 ", isAvailable=" + isAvailable +
+                ", bookGenres=" + bookGenres +
                 '}';
     }
 }

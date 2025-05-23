@@ -3,83 +3,70 @@ package domain.model;
 import java.util.ArrayList;
 
 public class User {
-    private int id;
+    private int id_User;
     private String name;
     private String passwordHash;
     private boolean isAdmin;
     private ArrayList<Loan> loanHistory;
 
-    public User(int id, String name, String password, boolean isAdmin) {
-        this.id = id;
+    public User(int id_User, String name, String passwordHash, boolean isAdmin, ArrayList<Loan> loanHistory) {
+        this.id_User = id_User;
         this.name = name;
-        this.passwordHash = MD5(password);
+        this.passwordHash = passwordHash;
         this.isAdmin = isAdmin;
         this.loanHistory = new ArrayList<>();
     }
-    public User(){
 
+    public User(){}
+
+    public int getId_User() {
+        return id_User;
     }
 
-    public void removeFromLoanHistory(Loan loan) {
-        loanHistory.remove(loan);
-    }
-
-    public int getId() {
-        return id;
+    public void setId_User(int id_User) {
+        this.id_User = id_User;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public ArrayList<Loan> getLoanHistory() {
-        return loanHistory;
-    }
-
-    public void addLoan(Loan loan) {
-        loanHistory.add(loan);
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public ArrayList<Loan> getLoanHistory() {
+        return loanHistory;
     }
 
     public void setLoanHistory(ArrayList<Loan> loanHistory) {
         this.loanHistory = loanHistory;
     }
 
-    private String MD5(String md5) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(md5.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : array) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id_User=" + id_User +
+                ", name='" + name + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", isAdmin=" + isAdmin +
+                ", loanHistory=" + loanHistory +
+                '}';
     }
 }
