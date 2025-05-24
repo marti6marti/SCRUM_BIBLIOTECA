@@ -1,38 +1,39 @@
 import domain.model.*;
+import domain.implementDAO.UserCRUD;
+import ui.Manager;
+import java.sql.SQLException;
 import java.util.Scanner;
-import ui.*;
 
 public class App {
     public static void main(String[] args) {
-        Library library = new Library();
         Scanner scanner = new Scanner(System.in);
-
-        Author author = new Author(6, "Autor1");
-        Genre genre = new Genre("Fantasy",1);
-        Book book = new Book(1, "Harry Potter", author, genre);
-        library.addBook(book);
-
-        User user = new User(1, "Marti", "password1234", false);
-        User user2 = new User(2, "Serhii", "password0000", true);
-        library.addUser(user2);
-        library.addUser(user);
+        UserCRUD userCRUD = new UserCRUD();
 
         System.out.println("Enter username:");
         String username = scanner.nextLine();
         System.out.println("Enter password:");
         String password = scanner.nextLine();
 
-        User loggedInUser = library.getUsers().get(username);
-        if (loggedInUser != null && loggedInUser.getPasswordHash().equals(Manager.MD5(password))) {
-            if (loggedInUser.isAdmin()) {
-                System.out.println("Welcome Admin!");
-                Manager.adminMenu(library);
+        try {
+            User loggedInUser = userCRUD.getAll().stream()
+                    .filter(u -> u.getName().equals(username) &&
+                            u.getPasswordHash().equals(Manager.MD5(password)))
+                    .findFirst()
+                    .orElse(null);
+
+            if (loggedInUser != null) {
+                if (loggedInUser.isAdmin()) {
+                    System.out.println("Welcome Admin!");
+                    Manager.adminMenu();
+                } else {
+                    System.out.println("Welcome User!");
+                    Manager.userMenu(loggedInUser);
+                }
             } else {
-                System.out.println("Welcome User!");
-                Manager.userMenu(loggedInUser, library);
+                System.out.println("Invalid username or password");
             }
-        } else {
-            System.out.println("Invalid username or password");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

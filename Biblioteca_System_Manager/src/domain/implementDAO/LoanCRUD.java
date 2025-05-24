@@ -18,14 +18,14 @@ public class LoanCRUD implements GenericDAO<Loan> {
 
     @Override
     public int create(Loan loan) throws SQLException {
-        String sql = "INSERT INTO Loan (id_Loan, user_id, book_id, loanDate, returnDate) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Loan (user_id, book, loanDate, returnDate) VALUES (?, ?, ?, ?)";
         try (Connection conn = conexion.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, loan.getId_Loan());
-            stmt.setInt(2, loan.getUser().getId_User());
-            stmt.setInt(3, loan.getBook().getId_Book());
-            stmt.setDate(4, new java.sql.Date(loan.getLoanDate().getTime()));
-            stmt.setDate(5, loan.getReturnDate() != null ? new java.sql.Date(loan.getReturnDate().getTime()) : null);
+
+            stmt.setInt(1, loan.getUser().getId_User());
+            stmt.setInt(2, loan.getBook().getId_Book());
+            stmt.setDate(3, new java.sql.Date(loan.getLoanDate().getTime()));
+            stmt.setDate(4, loan.getReturnDate() != null ? new java.sql.Date(loan.getReturnDate().getTime()) : null);
             stmt.executeUpdate();
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
@@ -58,7 +58,7 @@ public class LoanCRUD implements GenericDAO<Loan> {
                     UserCRUD userCRUD = new UserCRUD();
                     BookCRUD bookCRUD = new BookCRUD();
                     User user = userCRUD.read(rs.getInt("user_id"));
-                    Book book = bookCRUD.read(rs.getInt("book_id"));
+                    Book book = bookCRUD.read(rs.getInt("book"));
                     return new Loan(
                             rs.getInt("id_Loan"),
                             user,
@@ -74,7 +74,7 @@ public class LoanCRUD implements GenericDAO<Loan> {
 
     @Override
     public void update(Loan loan) throws SQLException {
-        String sql = "UPDATE Loan SET user_id = ?, book_id = ?, loanDate = ?, returnDate = ? WHERE id_Loan = ?";
+        String sql = "UPDATE Loan SET user_id = ?, book = ?, loanDate = ?, returnDate = ? WHERE id_Loan = ?";
         try (Connection conn = conexion.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, loan.getUser().getId_User());
@@ -97,7 +97,7 @@ public class LoanCRUD implements GenericDAO<Loan> {
             BookCRUD bookCRUD = new BookCRUD();
             while (rs.next()) {
                 User user = userCRUD.read(rs.getInt("user_id"));
-                Book book = bookCRUD.read(rs.getInt("book_id"));
+                Book book = bookCRUD.read(rs.getInt("book"));
                 loans.add(new Loan(
                         rs.getInt("id_Loan"),
                         user,
